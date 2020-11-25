@@ -40,21 +40,35 @@ app.use(validateBearerToken);
 
 // Handle getting movies
 function handleGetMovies(req, res) {
+  let results = [...MOVIEDEX];
 
-  if (req.query.genre) {
-    const genre = req.query.genre.toLowerCase();
-    res.json(MOVIEDEX.filter(movie => movie.genre.toLowerCase().includes(genre)));
+  console.log(req.query);
+
+  if (req.query.length === 0) {
+    return res.json(results);
   }
 
-  if (req.query.country) {
-    const country = req.query.country.toLowerCase();
-    res.json(MOVIEDEX.filter(movie => movie.country.toLowerCase().includes(country)));
+  for (const key in req.query) {
+    if (key === 'genre') {
+      const genre = req.query.genre.toLowerCase();
+      results = results.filter(movie => movie.genre.toLowerCase().includes(genre));
+      continue;
+    }
+  
+    if (key === 'country') {
+      const country = req.query.country.toLowerCase();
+      results = results.filter(movie => movie.country.toLowerCase().includes(country));
+      continue;
+    }
+  
+    if (key === 'avg_vote') {
+      const avg_vote = parseFloat(req.query.avg_vote);
+      results  = results.filter(movie => movie.avg_vote >= avg_vote);
+      continue;
+    }
   }
 
-  if (req.query.avg_vote) {
-    const avg_vote = parseFloat(req.query.avg_vote);
-    res.json(MOVIEDEX.filter(movie => movie.avg_vote >= avg_vote));
-  }
+  res.json(results);
 }
 
 // Set endpoint to /movie
